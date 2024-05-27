@@ -15,7 +15,7 @@ class SudokuSolver(private val board: Array<IntArray>) {
     fun solve(row: Int, col: Int): Boolean {
         var currentRow = row
         var currentCol = col
-        var foundSolution = false // Variable booleana para registrar si se encontró una solución
+        var foundSolution = false
 
         if (currentRow == size) {
             currentRow = 0
