@@ -9,49 +9,52 @@ class SudokuSolver(private val board: Array<IntArray>) {
         solve(0, 0)
     }
 
-
-
     // Método recursivo para resolver el Sudoku
-    fun solve(row: Int, col: Int): Boolean {
+    private fun solve(row: Int, col: Int): Boolean {
         var currentRow = row
         var currentCol = col
-        var foundSolution = false
 
+        // Si llegamos al final de la fila, pasamos a la siguiente columna
         if (currentRow == size) {
             currentRow = 0
-            if (++currentCol == size) {
+            currentCol++
+            // Si llegamos al final del tablero, encontramos una solución
+            if (currentCol == size) {
                 solutionCount++
                 printBoard()
                 println("Solution $solutionCount found")
-                foundSolution = true
+                return true
             }
         }
 
-        if (!foundSolution && board[currentRow][currentCol] != 0) {
-            foundSolution = solve(currentRow + 1, currentCol)
+        // Si la celda ya está llena, pasamos a la siguiente
+        if (board[currentRow][currentCol] != 0) {
+            return solve(currentRow + 1, currentCol)
         }
 
+        // Intentamos colocar los números del 1 al 9 en la celda vacía
         for (num in 1..9) {
-            if (!foundSolution && isSafe(currentRow, currentCol, num)) {
+            if (isSafe(currentRow, currentCol, num)) {
                 board[currentRow][currentCol] = num
-                foundSolution = solve(currentRow + 1, currentCol)
-                if (!foundSolution) {
-                    board[currentRow][currentCol] = 0
+                if (solve(currentRow + 1, currentCol)) {
+                    return true
                 }
+                // Si no encontramos solución, revertimos el cambio
+                board[currentRow][currentCol] = 0
             }
         }
 
-        return foundSolution
+        // Si no se encuentra ninguna solución, devolvemos falso
+        return false
     }
 
     // Método para comprobar si es seguro colocar un número en una celda
-    fun isSafe(row: Int, col: Int, num: Int): Boolean {
-        var safe = true
-
+    private fun isSafe(row: Int, col: Int, num: Int): Boolean {
+        var verificar = true
         // Verificar la fila y la columna
         for (i in 0 until size) {
             if (board[row][i] == num || board[i][col] == num) {
-                safe = false
+                verificar = false
             }
         }
 
@@ -61,12 +64,12 @@ class SudokuSolver(private val board: Array<IntArray>) {
         for (i in startRow until startRow + 3) {
             for (j in startCol until startCol + 3) {
                 if (board[i][j] == num) {
-                    safe = false
+                    verificar = false
                 }
             }
         }
 
-        return safe
+        return verificar
     }
 
     // Método para retornar el número de soluciones encontradas
@@ -75,7 +78,7 @@ class SudokuSolver(private val board: Array<IntArray>) {
     }
 
     // Método para imprimir el tablero
-    fun printBoard() {
+    private fun printBoard() {
         for (r in 0 until size) {
             for (d in 0 until size) {
                 print("${board[r][d]} ")
