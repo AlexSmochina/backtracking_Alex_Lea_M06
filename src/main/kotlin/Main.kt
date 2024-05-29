@@ -3,6 +3,7 @@ package org.example
 class SudokuSolver(private val board: Array<IntArray>) {
     private val size = 9
     private var solutionCount = 0
+    private val solutions = mutableListOf<Array<IntArray>>()
 
     // Método para buscar todas las soluciones del Sudoku
     fun cerca_solucions() {
@@ -21,9 +22,11 @@ class SudokuSolver(private val board: Array<IntArray>) {
             // Si llegamos al final del tablero, encontramos una solución
             if (currentCol == size) {
                 solutionCount++
+                val solution = board.map { it.copyOf() }.toTypedArray()
+                solutions.add(solution)
                 printBoard()
                 println("Solution $solutionCount found")
-                return true
+                return false // Continue to find all solutions
             }
         }
 
@@ -50,11 +53,10 @@ class SudokuSolver(private val board: Array<IntArray>) {
 
     // Método para comprobar si es seguro colocar un número en una celda
     private fun isSafe(row: Int, col: Int, num: Int): Boolean {
-        var verificar = true
         // Verificar la fila y la columna
         for (i in 0 until size) {
             if (board[row][i] == num || board[i][col] == num) {
-                verificar = false
+                return false
             }
         }
 
@@ -64,12 +66,12 @@ class SudokuSolver(private val board: Array<IntArray>) {
         for (i in startRow until startRow + 3) {
             for (j in startCol until startCol + 3) {
                 if (board[i][j] == num) {
-                    verificar = false
+                    return false
                 }
             }
         }
 
-        return verificar
+        return true
     }
 
     // Método para retornar el número de soluciones encontradas
@@ -78,7 +80,7 @@ class SudokuSolver(private val board: Array<IntArray>) {
     }
 
     // Método para imprimir el tablero
-    private fun printBoard() {
+    private fun printBoard(board: Array<IntArray> = this.board) {
         for (r in 0 until size) {
             for (d in 0 until size) {
                 print("${board[r][d]} ")
@@ -101,8 +103,28 @@ fun main() {
         intArrayOf(0, 0, 8, 5, 0, 0, 0, 1, 0),
         intArrayOf(0, 9, 0, 0, 0, 0, 4, 0, 0)
     )
+    val board1 = arrayOf(
+        intArrayOf(5, 3, 0, 0, 7, 0, 0, 0, 0),
+        intArrayOf(6, 0, 0, 1, 9, 5, 0, 0, 0),
+        intArrayOf(0, 9, 8, 0, 0, 0, 0, 6, 0),
+        intArrayOf(8, 0, 0, 0, 6, 0, 0, 0, 3),
+        intArrayOf(4, 0, 0, 8, 0, 3, 0, 0, 1),
+        intArrayOf(7, 0, 0, 0, 2, 0, 0, 3, 6),
+        intArrayOf(0, 6, 0, 0, 0, 0, 2, 8, 0),
+        intArrayOf(0, 0, 0, 4, 1, 9, 0, 0, 5),
+        intArrayOf(0, 0, 0, 0, 8, 0, 0, 7, 9)
+    )
 
     val solver = SudokuSolver(board)
     solver.cerca_solucions()
-    println("Number of solutions found: ${solver.num_solucions()}")
+    val numSolutions = solver.num_solucions()
+    println("Number of solutions found: $numSolutions")
+
+    if (numSolutions > 1) {
+        println("The given Sudoku has more than one solution.")
+    } else if (numSolutions == 1) {
+        println("The given Sudoku has exactly one solution.")
+    } else {
+        println("The given Sudoku has no solutions.")
+    }
 }
